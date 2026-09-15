@@ -5,24 +5,53 @@ const crypto = require('crypto');
 const querystring = require('querystring');
 
 const PORT = process.env.PORT || 3000;
+// Admin kirish ma'lumotlari (xohlasangiz PORT kabi environment variable orqali ham o'zgartirsa bo'ladi)
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASS = process.env.ADMIN_PASS || 'ChangeMe123!';
+const ADMIN_PASS = process.env.ADMIN_PASS || 'hanif';
 const CONTENT_FILE = path.join(__dirname, 'content.json');
 
 const defaultContent = {
+  // Hero
   heroBadge: 'Smart Money Concepts (SMC) & ICT Halol Kripto Savdosi',
   heroTitle1: 'Halol va Intizomli',
   heroTitle2: 'Top Muslim Traders Academy',
   heroDesc: "Top Muslim Traders Academy — shariat tamoyillariga mos keluvchi Spot kriptovalyuta savdosi, Smart Money Concepts (SMC), ICT tahlili va intizomli risk-menedjmentni mukammal o'rgatuvchi xalqaro treyderlar akademiyasidir.",
   stat1Value: '100%', stat1Label: 'Spot & Halol Kripto',
-  stat2Value: '25K+', stat2Label: 'Jami Obunachilar',
+  stat2Value: '25K+', stat2Label: "Jami Obunachilar",
   stat3Value: 'SMC / ICT', stat3Label: 'Smart Money Tahlil',
   telegramBot: 'https://t.me/TopMuslimTradersBot',
   telegramChannel: 'https://t.me/Scalp_TMT',
   telegramResults: 'https://t.me/TMT_Natijalari',
   instagram: 'https://www.instagram.com/top_muslim_traders?stkn=MWFiZWd6cGZua3d6aw==',
   heroImage: '',
-  logoImage: ''
+  logoImage: '',
+
+  // YouTube / video darslar
+  youtubeChannel: 'https://youtube.com/@topmuslimtraders',
+  youtube1Title: "SMC asoslari: Order Block va Liquidity",
+  youtube1Url: 'https://youtube.com/@topmuslimtraders',
+  youtube2Title: 'ICT tahlil: Market Structure tushunchasi',
+  youtube2Url: 'https://youtube.com/@topmuslimtraders',
+  youtube3Title: 'Risk-menedjment: Halol pozitsiya hajmi',
+  youtube3Url: 'https://youtube.com/@topmuslimtraders',
+
+  // Kripto halolmi?
+  halalTitle: 'Kripto Savdosi Islom Nuqtai Nazaridan Halolmi?',
+  halalText: "Akademiyamizda faqat Spot (naqd) savdo o'rgatiladi — fyucherslar, marja va qarzga savdo (riboga asoslangan mexanizmlar) qat'iyan tavsiya etilmaydi. Bizningcha, aniq egalik huquqi mavjud bo'lgan, ortiqcha noaniqlik (g'arar) va foizga (riбо) asoslanmagan savdo shariat tamoyillariga mos keladi. Har bir talaba o'z mintaqasidagi bilimdon olimlar bilan maslahatlashishni tavsiya qilamiz.",
+  halalPoint1: "Faqat Spot savdo — aktivga to'liq egalik huquqi",
+  halalPoint2: 'Riboga asoslangan marja va fyuchers savdosi yo\u2019q',
+  halalPoint3: "Ortiqcha g'arar (noaniqlik)dan saqlanish va intizomli risk boshqaruvi",
+
+  // PDF kutubxona
+  pdf1Title: 'SMC & ICT Boshlang\u2019ich Qo\u2019llanma',
+  pdf1Desc: "Smart Money Concepts va ICT tahlilining asosiy tushunchalari haqida qisqa qo'llanma.",
+  pdf1Url: '',
+  pdf2Title: "Risk-menedjment Yo'riqnomasi",
+  pdf2Desc: "Halol va intizomli risk boshqaruvi bo'yicha amaliy maslahatlar.",
+  pdf2Url: '',
+  pdf3Title: "Halol Savdo Qo'llanmasi",
+  pdf3Desc: 'Spot savdoda shariat tamoyillariga rioya qilish bo\u2019yicha asosiy qoidalar.',
+  pdf3Url: ''
 };
 
 function loadContent() {
@@ -65,7 +94,7 @@ function readBody(req) {
   });
 }
 function safeEqual(a, b) {
-  const bufA = Buffer.from(String(a)); const bufB = Buffer.from(String(b));
+  const bufA = Buffer.from(String(a || '')); const bufB = Buffer.from(String(b || ''));
   if (bufA.length !== bufB.length) return false;
   return crypto.timingSafeEqual(bufA, bufB);
 }
@@ -94,6 +123,7 @@ function buildPublicHtml(c) {
 <html lang="uz" class="dark scroll-smooth">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Top Muslim Traders Academy — halol Spot kripto savdosi, Smart Money Concepts (SMC) va ICT tahlilini o'rgatuvchi xalqaro treyderlar akademiyasi.">
 <title>Top Muslim Traders Academy | Halol Kripto & Smart Money Hub</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -114,6 +144,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background-color:#06080D;color:#
 .insta-gradient-bg{background:linear-gradient(45deg,#405DE6,#5851DB,#833AB4,#C13584,#E1306C,#FD1D1D);}
 .gradient-gold-text{background:linear-gradient(135deg,#FFF5B8 0%,#FFD700 50%,#C5A028 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .grid-cyber-pattern{background-size:40px 40px;background-image:linear-gradient(to right,rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.02) 1px,transparent 1px);}
+.section-label{font-size:.7rem;letter-spacing:.08em;color:#00E676;font-weight:700;}
 </style>
 </head>
 <body class="bg-darkBg text-slate-100 antialiased flex flex-col min-h-screen justify-between relative">
@@ -213,76 +244,298 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background-color:#06080D;color:#
   </div>
 </section>
 
+<section id="youtube" class="py-16 lg:py-24 border-b border-cardBorder">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span class="section-label"><i class="fa-brands fa-youtube"></i> VIDEO DARSLAR</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-white mt-2">O'rganishni Video Orqali Boshlang</h2>
+      <p class="text-slate-400 text-sm mt-3">SMC, ICT va risk-menedjment bo'yicha bepul video darslarimiz</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <a href="${esc(c.youtube1Url)}" target="_blank" class="glass-card glass-card-hover rounded-2xl overflow-hidden border border-cardBorder block">
+        <div class="aspect-video bg-darkBg/90 flex items-center justify-center border-b border-cardBorder"><i class="fa-brands fa-youtube text-5xl text-red-500/70"></i></div>
+        <div class="p-4"><div class="text-sm font-bold text-white">${esc(c.youtube1Title)}</div></div>
+      </a>
+      <a href="${esc(c.youtube2Url)}" target="_blank" class="glass-card glass-card-hover rounded-2xl overflow-hidden border border-cardBorder block">
+        <div class="aspect-video bg-darkBg/90 flex items-center justify-center border-b border-cardBorder"><i class="fa-brands fa-youtube text-5xl text-red-500/70"></i></div>
+        <div class="p-4"><div class="text-sm font-bold text-white">${esc(c.youtube2Title)}</div></div>
+      </a>
+      <a href="${esc(c.youtube3Url)}" target="_blank" class="glass-card glass-card-hover rounded-2xl overflow-hidden border border-cardBorder block">
+        <div class="aspect-video bg-darkBg/90 flex items-center justify-center border-b border-cardBorder"><i class="fa-brands fa-youtube text-5xl text-red-500/70"></i></div>
+        <div class="p-4"><div class="text-sm font-bold text-white">${esc(c.youtube3Title)}</div></div>
+      </a>
+    </div>
+    <div class="text-center mt-8">
+      <a href="${esc(c.youtubeChannel)}" target="_blank" class="inline-flex items-center space-x-2 text-red-400 font-bold text-sm hover:text-red-300">
+        <i class="fa-brands fa-youtube"></i><span>Kanalimizga obuna bo'ling</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="halal" class="py-16 lg:py-24 border-b border-cardBorder grid-cyber-pattern">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <span class="section-label"><i class="fa-solid fa-kaaba"></i> HALOL KRIPTO</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-white mt-2">${esc(c.halalTitle)}</h2>
+    </div>
+    <div class="glass-card rounded-3xl p-6 sm:p-10 border border-goldAccent/20">
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">${esc(c.halalText)}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+        <div class="flex items-start space-x-3 bg-darkBg/60 p-4 rounded-xl border border-cardBorder">
+          <i class="fa-solid fa-check text-emeraldGreen mt-1"></i><span class="text-xs text-slate-300">${esc(c.halalPoint1)}</span>
+        </div>
+        <div class="flex items-start space-x-3 bg-darkBg/60 p-4 rounded-xl border border-cardBorder">
+          <i class="fa-solid fa-check text-emeraldGreen mt-1"></i><span class="text-xs text-slate-300">${esc(c.halalPoint2)}</span>
+        </div>
+        <div class="flex items-start space-x-3 bg-darkBg/60 p-4 rounded-xl border border-cardBorder">
+          <i class="fa-solid fa-check text-emeraldGreen mt-1"></i><span class="text-xs text-slate-300">${esc(c.halalPoint3)}</span>
+        </div>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-6">*Bu ma'lumot umumiy tavsiya xarakteriga ega bo'lib, diniy fatvo hisoblanmaydi. Iltimos, o'z mintaqangizdagi bilimdon ulamolar bilan maslahatlashing.</p>
+    </div>
+  </div>
+</section>
+
+<section id="calculator" class="py-16 lg:py-24 border-b border-cardBorder">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <span class="section-label"><i class="fa-solid fa-calculator"></i> KALKULYATOR</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-white mt-2">Risk & Pozitsiya Hajmi Kalkulyatori</h2>
+      <p class="text-slate-400 text-sm mt-3">Intizomli savdo uchun har bir bitimda qancha risk qilishingizni oldindan hisoblang</p>
+    </div>
+    <div class="glass-card rounded-3xl p-6 sm:p-8 border border-accentBlue/20">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs text-slate-400">Depozit (USDT)</label>
+          <input id="calcDeposit" type="number" value="1000" class="w-full mt-1 p-3 rounded-xl bg-darkBg border border-cardBorder text-white">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400">Risk foizi (%)</label>
+          <input id="calcRisk" type="number" value="1" class="w-full mt-1 p-3 rounded-xl bg-darkBg border border-cardBorder text-white">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400">Kirish narxi (Entry)</label>
+          <input id="calcEntry" type="number" value="100" class="w-full mt-1 p-3 rounded-xl bg-darkBg border border-cardBorder text-white">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400">Stop-Loss narxi</label>
+          <input id="calcStop" type="number" value="98" class="w-full mt-1 p-3 rounded-xl bg-darkBg border border-cardBorder text-white">
+        </div>
+      </div>
+      <button onclick="calcPosition()" class="w-full mt-6 bg-gradient-to-r from-accentBlue to-emeraldGreen text-darkBg font-black py-3.5 rounded-xl">Hisoblash</button>
+      <div id="calcResult" class="mt-6 hidden bg-darkBg/70 border border-cardBorder rounded-xl p-4 space-y-1.5 text-sm"></div>
+    </div>
+  </div>
+</section>
+
+<section id="pdf-library" class="py-16 lg:py-24 border-b border-cardBorder grid-cyber-pattern">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span class="section-label"><i class="fa-solid fa-book-bookmark"></i> PDF KUTUBXONA</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-white mt-2">Bepul O'quv Materiallari</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-card glass-card-hover rounded-2xl p-6 border border-cardBorder flex flex-col">
+        <i class="fa-solid fa-file-pdf text-3xl text-accentPurple mb-3"></i>
+        <div class="text-sm font-bold text-white">${esc(c.pdf1Title)}</div>
+        <p class="text-xs text-slate-400 mt-2 flex-grow">${esc(c.pdf1Desc)}</p>
+        ${c.pdf1Url ? `<a href="${esc(c.pdf1Url)}" target="_blank" class="mt-4 inline-flex items-center justify-center text-xs font-bold bg-accentPurple/15 text-accentPurple px-4 py-2.5 rounded-lg">Yuklab olish</a>` : `<span class="mt-4 inline-flex items-center justify-center text-xs font-bold bg-cardBorder/40 text-slate-500 px-4 py-2.5 rounded-lg">Tez orada</span>`}
+      </div>
+      <div class="glass-card glass-card-hover rounded-2xl p-6 border border-cardBorder flex flex-col">
+        <i class="fa-solid fa-file-pdf text-3xl text-accentPurple mb-3"></i>
+        <div class="text-sm font-bold text-white">${esc(c.pdf2Title)}</div>
+        <p class="text-xs text-slate-400 mt-2 flex-grow">${esc(c.pdf2Desc)}</p>
+        ${c.pdf2Url ? `<a href="${esc(c.pdf2Url)}" target="_blank" class="mt-4 inline-flex items-center justify-center text-xs font-bold bg-accentPurple/15 text-accentPurple px-4 py-2.5 rounded-lg">Yuklab olish</a>` : `<span class="mt-4 inline-flex items-center justify-center text-xs font-bold bg-cardBorder/40 text-slate-500 px-4 py-2.5 rounded-lg">Tez orada</span>`}
+      </div>
+      <div class="glass-card glass-card-hover rounded-2xl p-6 border border-cardBorder flex flex-col">
+        <i class="fa-solid fa-file-pdf text-3xl text-accentPurple mb-3"></i>
+        <div class="text-sm font-bold text-white">${esc(c.pdf3Title)}</div>
+        <p class="text-xs text-slate-400 mt-2 flex-grow">${esc(c.pdf3Desc)}</p>
+        ${c.pdf3Url ? `<a href="${esc(c.pdf3Url)}" target="_blank" class="mt-4 inline-flex items-center justify-center text-xs font-bold bg-accentPurple/15 text-accentPurple px-4 py-2.5 rounded-lg">Yuklab olish</a>` : `<span class="mt-4 inline-flex items-center justify-center text-xs font-bold bg-cardBorder/40 text-slate-500 px-4 py-2.5 rounded-lg">Tez orada</span>`}
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer class="bg-cardBg border-t border-cardBorder py-10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500">
     &copy; 2026 TOP MUSLIM TRADERS ACADEMY. Barcha huquqlar himoyalangan.
   </div>
 </footer>
+
+<script>
+function calcPosition(){
+  const deposit = parseFloat(document.getElementById('calcDeposit').value) || 0;
+  const riskPct = parseFloat(document.getElementById('calcRisk').value) || 0;
+  const entry = parseFloat(document.getElementById('calcEntry').value) || 0;
+  const stop = parseFloat(document.getElementById('calcStop').value) || 0;
+  const box = document.getElementById('calcResult');
+  if (!deposit || !riskPct || !entry || !stop || entry === stop) {
+    box.classList.remove('hidden');
+    box.innerHTML = '<div class="text-tradeRed">Iltimos, barcha maydonlarni to\\'g\\'ri to\\'ldiring (Entry va Stop-Loss teng bo\\'lmasligi kerak).</div>';
+    return;
+  }
+  const riskAmount = deposit * (riskPct / 100);
+  const priceDistance = Math.abs(entry - stop);
+  const positionSize = riskAmount / priceDistance;
+  const positionValue = positionSize * entry;
+  box.classList.remove('hidden');
+  box.innerHTML =
+    '<div class="flex justify-between"><span class="text-slate-400">Risk miqdori:</span><span class="text-white font-bold">' + riskAmount.toFixed(2) + ' USDT</span></div>' +
+    '<div class="flex justify-between"><span class="text-slate-400">Pozitsiya hajmi (dona/coin):</span><span class="text-emeraldGreen font-bold">' + positionSize.toFixed(6) + '</span></div>' +
+    '<div class="flex justify-between"><span class="text-slate-400">Pozitsiya qiymati:</span><span class="text-goldAccent font-bold">' + positionValue.toFixed(2) + ' USDT</span></div>';
+}
+</script>
 </body>
 </html>`;
 }
 
 function loginPageHtml(error) {
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Admin Kirish</title>
+  return `<!DOCTYPE html><html lang="uz"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Kirish | Top Muslim Traders Academy</title>
 <script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center">
-<form method="POST" action="/admin/login" class="bg-slate-800 p-8 rounded-2xl w-full max-w-sm space-y-4">
-  <h1 class="text-xl font-bold text-center">Admin Panel</h1>
-  ${error ? `<div class="bg-red-500/20 text-red-300 text-sm p-2 rounded">${esc(error)}</div>` : ''}
-  <input name="username" placeholder="Login" class="w-full p-3 rounded bg-slate-700 text-white" required>
-  <input name="password" type="password" placeholder="Parol" class="w-full p-3 rounded bg-slate-700 text-white" required>
-  <button class="w-full bg-yellow-500 text-black font-bold p-3 rounded">Kirish</button>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center px-4">
+<form method="POST" action="/admin/login" class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl">
+  <div class="text-center">
+    <div class="text-xs font-bold tracking-widest text-yellow-500 uppercase">Top Muslim Traders Academy</div>
+    <h1 class="text-xl font-bold mt-1">Admin Panelga Kirish</h1>
+  </div>
+  ${error ? `<div class="bg-red-500/20 text-red-300 text-sm p-2.5 rounded-lg">${esc(error)}</div>` : ''}
+  <div>
+    <label class="text-xs text-slate-400">Login</label>
+    <input name="username" placeholder="Login" class="w-full p-3 mt-1 rounded-lg bg-slate-800 border border-slate-700 text-white" required autofocus>
+  </div>
+  <div>
+    <label class="text-xs text-slate-400">Parol</label>
+    <input name="password" type="password" placeholder="Parol" class="w-full p-3 mt-1 rounded-lg bg-slate-800 border border-slate-700 text-white" required>
+  </div>
+  <button class="w-full bg-yellow-500 hover:bg-yellow-400 transition text-black font-bold p-3 rounded-lg">Kirish</button>
 </form></body></html>`;
 }
 
+function field(label, name, value, type) {
+  type = type || 'text';
+  return `<div><label class="text-xs text-slate-400">${esc(label)}</label>
+      <input name="${name}" type="${type}" value="${esc(value)}" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 mt-1"></div>`;
+}
+function textareaField(label, name, value) {
+  return `<div><label class="text-xs text-slate-400">${esc(label)}</label>
+      <textarea name="${name}" rows="3" class="w-full p-2.5 rounded-lg bg-slate-800 border border-slate-700 mt-1">${esc(value)}</textarea></div>`;
+}
+
 function adminPageHtml(c, message) {
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Admin Panel</title>
-<script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-slate-900 text-white min-h-screen p-6">
-<div class="max-w-3xl mx-auto space-y-6">
-  <div class="flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Saytni boshqarish</h1>
-    <form method="POST" action="/admin/logout"><button class="bg-red-600 px-4 py-2 rounded text-sm">Chiqish</button></form>
-  </div>
-  ${message ? `<div class="bg-green-500/20 text-green-300 p-3 rounded">${esc(message)}</div>` : ''}
-  <form id="editForm" class="space-y-4 bg-slate-800 p-6 rounded-2xl">
-    <div><label class="text-xs text-slate-400">Hero belgi (badge)</label>
-      <input name="heroBadge" value="${esc(c.heroBadge)}" class="w-full p-2 rounded bg-slate-700"></div>
-    <div><label class="text-xs text-slate-400">Sarlavha 1-qator</label>
-      <input name="heroTitle1" value="${esc(c.heroTitle1)}" class="w-full p-2 rounded bg-slate-700"></div>
-    <div><label class="text-xs text-slate-400">Sarlavha 2-qator (oltin rang)</label>
-      <input name="heroTitle2" value="${esc(c.heroTitle2)}" class="w-full p-2 rounded bg-slate-700"></div>
-    <div><label class="text-xs text-slate-400">Tavsif matni</label>
-      <textarea name="heroDesc" rows="3" class="w-full p-2 rounded bg-slate-700">${esc(c.heroDesc)}</textarea></div>
-    <div class="grid grid-cols-3 gap-3">
-      <div><input name="stat1Value" value="${esc(c.stat1Value)}" placeholder="Statistika 1" class="w-full p-2 rounded bg-slate-700 mb-1">
-        <input name="stat1Label" value="${esc(c.stat1Label)}" class="w-full p-2 rounded bg-slate-700 text-xs"></div>
-      <div><input name="stat2Value" value="${esc(c.stat2Value)}" placeholder="Statistika 2" class="w-full p-2 rounded bg-slate-700 mb-1">
-        <input name="stat2Label" value="${esc(c.stat2Label)}" class="w-full p-2 rounded bg-slate-700 text-xs"></div>
-      <div><input name="stat3Value" value="${esc(c.stat3Value)}" placeholder="Statistika 3" class="w-full p-2 rounded bg-slate-700 mb-1">
-        <input name="stat3Label" value="${esc(c.stat3Label)}" class="w-full p-2 rounded bg-slate-700 text-xs"></div>
+  return `<!DOCTYPE html><html lang="uz"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel | Top Muslim Traders Academy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>.tab-btn.active{background:#EAB308;color:#000;}.tab-panel{display:none;}.tab-panel.active{display:block;}</style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+<div class="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
+  <div class="flex flex-wrap justify-between items-center gap-3">
+    <div>
+      <div class="text-xs font-bold tracking-widest text-yellow-500 uppercase">Top Muslim Traders Academy</div>
+      <h1 class="text-2xl font-bold">Saytni Boshqarish Paneli</h1>
     </div>
-    <div><label class="text-xs text-slate-400">Telegram Bot havolasi</label>
-      <input name="telegramBot" value="${esc(c.telegramBot)}" class="w-full p-2 rounded bg-slate-700"></div>
-    <div><label class="text-xs text-slate-400">Telegram Kanal havolasi</label>
-      <input name="telegramChannel" value="${esc(c.telegramChannel)}" class="w-full p-2 rounded bg-slate-700"></div>
-    <div><label class="text-xs text-slate-400">Telegram Natijalar havolasi</label>
-      <input name="telegramResults" value="${esc(c.telegramResults)}" class="w-full p-2 rounded bg-slate-700"></div>
-    <div><label class="text-xs text-slate-400">Instagram havolasi</label>
-      <input name="instagram" value="${esc(c.instagram)}" class="w-full p-2 rounded bg-slate-700"></div>
+    <div class="flex gap-2">
+      <a href="/" target="_blank" class="bg-slate-800 hover:bg-slate-700 transition px-4 py-2.5 rounded-lg text-sm font-bold">Saytni ko'rish</a>
+      <form method="POST" action="/admin/logout"><button class="bg-red-600 hover:bg-red-500 transition px-4 py-2.5 rounded-lg text-sm font-bold">Chiqish</button></form>
+    </div>
+  </div>
+  ${message ? `<div class="bg-green-500/20 text-green-300 p-3 rounded-lg text-sm">${esc(message)}</div>` : ''}
+  <div id="saveMsg" class="hidden bg-green-500/20 text-green-300 p-3 rounded-lg text-sm">Saqlandi ✓</div>
 
-    <div><label class="text-xs text-slate-400">Logo rasmi (ixtiyoriy)</label>
-      <input type="file" id="logoFile" accept="image/*" class="w-full text-sm">
-      <input type="hidden" name="logoImage" id="logoImage" value="${esc(c.logoImage)}"></div>
-    <div><label class="text-xs text-slate-400">Hero banner rasmi (ixtiyoriy)</label>
-      <input type="file" id="heroFile" accept="image/*" class="w-full text-sm">
-      <input type="hidden" name="heroImage" id="heroImage" value="${esc(c.heroImage)}"></div>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" data-tab="main" class="tab-btn active bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold">Asosiy Sahifa</button>
+    <button type="button" data-tab="links" class="tab-btn bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold">Havolalar & Rasmlar</button>
+    <button type="button" data-tab="video" class="tab-btn bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold">Video Darslar</button>
+    <button type="button" data-tab="halal" class="tab-btn bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold">Kripto Halolmi?</button>
+    <button type="button" data-tab="pdf" class="tab-btn bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold">PDF Kutubxona</button>
+  </div>
 
-    <button type="submit" class="w-full bg-yellow-500 text-black font-bold p-3 rounded">Saqlash</button>
+  <form id="editForm" class="space-y-5">
+
+    <div class="tab-panel active space-y-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl" data-panel="main">
+      <h2 class="font-bold text-yellow-500">Hero bo'limi va statistika</h2>
+      ${field('Hero belgi (badge)', 'heroBadge', c.heroBadge)}
+      ${field('Sarlavha 1-qator', 'heroTitle1', c.heroTitle1)}
+      ${field('Sarlavha 2-qator (oltin rang)', 'heroTitle2', c.heroTitle2)}
+      ${textareaField('Tavsif matni', 'heroDesc', c.heroDesc)}
+      <div class="grid grid-cols-3 gap-3">
+        <div>${field('Statistika 1 qiymati', 'stat1Value', c.stat1Value)}<div class="mt-1">${field('Statistika 1 nomi', 'stat1Label', c.stat1Label)}</div></div>
+        <div>${field('Statistika 2 qiymati', 'stat2Value', c.stat2Value)}<div class="mt-1">${field('Statistika 2 nomi', 'stat2Label', c.stat2Label)}</div></div>
+        <div>${field('Statistika 3 qiymati', 'stat3Value', c.stat3Value)}<div class="mt-1">${field('Statistika 3 nomi', 'stat3Label', c.stat3Label)}</div></div>
+      </div>
+    </div>
+
+    <div class="tab-panel space-y-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl" data-panel="links">
+      <h2 class="font-bold text-yellow-500">Ijtimoiy tarmoq havolalari</h2>
+      ${field('Telegram Bot havolasi', 'telegramBot', c.telegramBot)}
+      ${field('Telegram Kanal havolasi', 'telegramChannel', c.telegramChannel)}
+      ${field('Telegram Natijalar havolasi', 'telegramResults', c.telegramResults)}
+      ${field('Instagram havolasi', 'instagram', c.instagram)}
+      <h2 class="font-bold text-yellow-500 pt-2">Rasmlar</h2>
+      <div><label class="text-xs text-slate-400">Logo rasmi (ixtiyoriy)</label>
+        <input type="file" id="logoFile" accept="image/*" class="w-full text-sm mt-1">
+        <input type="hidden" name="logoImage" id="logoImage" value="${esc(c.logoImage)}"></div>
+      <div><label class="text-xs text-slate-400">Hero banner rasmi (ixtiyoriy)</label>
+        <input type="file" id="heroFile" accept="image/*" class="w-full text-sm mt-1">
+        <input type="hidden" name="heroImage" id="heroImage" value="${esc(c.heroImage)}"></div>
+    </div>
+
+    <div class="tab-panel space-y-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl" data-panel="video">
+      <h2 class="font-bold text-yellow-500">YouTube video darslar</h2>
+      ${field('YouTube kanal havolasi', 'youtubeChannel', c.youtubeChannel)}
+      <div class="grid sm:grid-cols-1 gap-3 pt-2">
+        ${field('Video 1 sarlavhasi', 'youtube1Title', c.youtube1Title)}
+        ${field('Video 1 havolasi', 'youtube1Url', c.youtube1Url)}
+        ${field('Video 2 sarlavhasi', 'youtube2Title', c.youtube2Title)}
+        ${field('Video 2 havolasi', 'youtube2Url', c.youtube2Url)}
+        ${field('Video 3 sarlavhasi', 'youtube3Title', c.youtube3Title)}
+        ${field('Video 3 havolasi', 'youtube3Url', c.youtube3Url)}
+      </div>
+    </div>
+
+    <div class="tab-panel space-y-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl" data-panel="halal">
+      <h2 class="font-bold text-yellow-500">"Kripto halolmi?" bo'limi</h2>
+      ${field('Sarlavha', 'halalTitle', c.halalTitle)}
+      ${textareaField('Asosiy matn', 'halalText', c.halalText)}
+      ${field('1-nuqta', 'halalPoint1', c.halalPoint1)}
+      ${field('2-nuqta', 'halalPoint2', c.halalPoint2)}
+      ${field('3-nuqta', 'halalPoint3', c.halalPoint3)}
+    </div>
+
+    <div class="tab-panel space-y-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl" data-panel="pdf">
+      <h2 class="font-bold text-yellow-500">PDF kutubxona (havolani bo'sh qoldirsangiz, "Tez orada" deb ko'rsatiladi)</h2>
+      <div class="grid gap-3 pb-3 border-b border-slate-800">
+        ${field('PDF 1 sarlavhasi', 'pdf1Title', c.pdf1Title)}
+        ${textareaField('PDF 1 tavsifi', 'pdf1Desc', c.pdf1Desc)}
+        ${field('PDF 1 havolasi', 'pdf1Url', c.pdf1Url)}
+      </div>
+      <div class="grid gap-3 pb-3 border-b border-slate-800">
+        ${field('PDF 2 sarlavhasi', 'pdf2Title', c.pdf2Title)}
+        ${textareaField('PDF 2 tavsifi', 'pdf2Desc', c.pdf2Desc)}
+        ${field('PDF 2 havolasi', 'pdf2Url', c.pdf2Url)}
+      </div>
+      <div class="grid gap-3">
+        ${field('PDF 3 sarlavhasi', 'pdf3Title', c.pdf3Title)}
+        ${textareaField('PDF 3 tavsifi', 'pdf3Desc', c.pdf3Desc)}
+        ${field('PDF 3 havolasi', 'pdf3Url', c.pdf3Url)}
+      </div>
+    </div>
+
+    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-400 transition text-black font-bold p-3.5 rounded-xl">Barcha o'zgarishlarni saqlash</button>
   </form>
-  <a href="/" target="_blank" class="text-blue-400 text-sm">Saytni ko'rish →</a>
 </div>
 <script>
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector('.tab-panel[data-panel="' + btn.dataset.tab + '"]').classList.add('active');
+  });
+});
 function fileToBase64(input, hiddenId) {
   input.addEventListener('change', () => {
     const file = input.files[0];
@@ -305,7 +558,14 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  if (res.ok) { window.location.reload(); } else { alert('Xatolik yuz berdi'); }
+  const msg = document.getElementById('saveMsg');
+  if (res.ok) {
+    msg.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => msg.classList.add('hidden'), 3000);
+  } else {
+    alert('Xatolik yuz berdi. Qayta urinib ko\\'ring.');
+  }
 });
 </script>
 </body></html>`;
@@ -382,4 +642,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`Top Muslim Traders Academy Server is live on port ${PORT}`);
+  console.log(`Admin panel: /admin/login  (login: ${ADMIN_USER})`);
 });
